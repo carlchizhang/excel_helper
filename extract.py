@@ -21,6 +21,12 @@ def extract(filename):
     print(df.head())
     return df
 
+def convert_date(date):
+    if date.month > 7:
+        job_ym = f'{date.year+1}-{date.month-7:02}'
+    else:
+        job_ym = f'{date.year}-{date.month+5:02}'
+
 def process_gb(df, res):
     job_id = df[JOB_ID_COL].iloc[0]
     job_class = 0
@@ -35,10 +41,7 @@ def process_gb(df, res):
         else:
             job_class = 0
             job_desc = date
-            if date.month > 7:
-                job_ym = f'{date.year+1}-{date.month-7:02}'
-            else:
-                job_ym = f'{date.year}-{date.month+5:02}'
+            job_ym = convert_date(date)
     elif df.shape[0] > 1:
         dates = df[ACT_SHIP_DATE_COL]
         dates = dates.sort_values()
@@ -50,10 +53,7 @@ def process_gb(df, res):
             max_dt = dates.max()
             job_class = 1
             job_desc = min_dt
-            if min_dt.month > 7:
-                job_ym = f'{min_dt.year+1}-{min_dt.month-7:02}'
-            else:
-                job_ym = f'{min_dt.year}-{min_dt.month+5:02}'
+            job_ym = convert_date(min_dt)
             if min_dt.year != max_dt.year or min_dt.month != max_dt.month:
                 job_class = 2
                 if (max_dt - min_dt).days > 10:
